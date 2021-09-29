@@ -19,17 +19,18 @@ dag = DAG(
     "treino-02", 
     description="Get Titanic data from internet and calculate mean age",
     default_args=default_args, 
-    schedule_interval=timedelta(minutes=5)
+    schedule_interval=timedelta(minutes=5),
+    catchup=False
 )
 
 get_data = BashOperator(
     task_id="get-data",
-    bash_command='curl https://raw.githubusercontent.com/A3Data/hermione/master/hermione/file_text/train.csv -o ~/train.csv',
+    bash_command='curl https://raw.githubusercontent.com/A3Data/hermione/master/hermione/file_text/train.csv -o /usr/local/airflow/data/train.csv',
     dag=dag
 )
 
 def calculate_mean_age():
-    df = pd.read_csv('~/train.csv')
+    df = pd.read_csv('/usr/local/airflow/data/train.csv')
     med = df.Age.mean()
     return med
 

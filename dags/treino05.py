@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 import zipfile
 import pandas as pd
 
-data_path = '/usr/local/airflow/data/microdados_enade_2019/2019/3.DADOS/'
+data_path = '/usr/local/airflow/data/3.DADOS/'
 arquivo = data_path + 'microdados_enade_2019.txt'
 
 default_args = {
@@ -23,7 +23,8 @@ dag = DAG(
     "treino-05", 
     description="Uma dag com vários paralelismos",
     default_args=default_args, 
-    schedule_interval="*/3 * * * *"
+    schedule_interval="*/3 * * * *",
+    catchup=False
 )
 
 get_data = BashOperator(
@@ -50,8 +51,7 @@ def aplica_filtros():
     enade = pd.read_csv(arquivo, sep=';', decimal=',', usecols=cols)
     enade = enade.loc[
         (enade.NU_IDADE > 20) &
-        (enade.NU_IDADE < 40) &
-        (enade.NT_GER > 0)
+        (enade.NU_IDADE < 40)
     ]
     enade.to_csv(data_path + 'enade_filtrado.csv', index=False)
 
